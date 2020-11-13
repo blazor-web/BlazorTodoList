@@ -1,0 +1,45 @@
+﻿@page "/todo/{id:int}"
+<h3>Todo Item </h3>
+
+<a href="/todos">Back</a>
+@if (SingleTodo != null)
+{
+    <li>
+        <p>
+            <span>Title</span>
+            @SingleTodo[0].title
+        </p>
+    </li>
+    <li>
+        <p>
+            <span>IsCompleted?</span>
+            @SingleTodo[0].completed
+        </p>
+    
+    </li>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    [Inject]
+    public HttpClient httpClient { get; set; }
+    private Todo[] SingleTodo { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        SingleTodo = await httpClient.GetFromJsonAsync<Todo[]>("https://jsonplaceholder.typicode.com/todos?id=" + Id);
+
+    }
+
+    private class Todo
+    {
+        public long id { get; set; }
+        public int userId { get; set; }
+        public string title { get; set; }
+        public bool completed { get; set; }
+    }
+
+}

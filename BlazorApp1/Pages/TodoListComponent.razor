@@ -1,0 +1,54 @@
+﻿@page "/todos"
+<h3>TodoListComponent</h3>
+
+@if (todoItems != null)
+{
+    <table class="table">
+        <tr>
+            <td>Id</td>
+            <td>title</td>
+            <td>Completed</td>
+        </tr>
+    </table>
+    <Virtualize Items="@todoItems" Context="todo" ItemSize="10">
+        <tr>
+            <td>@todo.id</td>
+            <td><a href="@($"/todo/{todo.id}")">@todo.title</a></td>
+            <td><input type="checkbox" @bind="@todo.completed" /></td>
+        </tr>
+    </Virtualize>
+    @*@foreach (var todo in todoItems)
+    {
+        <tr>
+            <td>@todo.id</td>
+            <td><a href="@($"/todo/{todo.id}")">@todo.title</a></td>
+            <td><input type="checkbox" @bind="@todo.completed" /></td>
+        </tr>
+    }*@
+}
+else
+{
+    <h4>ooooopssssss </h4>
+}
+
+
+
+@code {
+    [Inject]
+    public HttpClient httpClient { get; set; }
+    private TodoItem[] todoItems;
+
+    protected override async Task OnInitializedAsync()
+    {
+        todoItems = await httpClient.GetFromJsonAsync<TodoItem[]>("https://jsonplaceholder.typicode.com/todos");
+    }
+
+
+    private class TodoItem
+    {
+        public long id { get; set; }
+        public int userId { get; set; }
+        public string title { get; set; }
+        public bool completed { get; set; }
+    }
+}
